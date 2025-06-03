@@ -21,10 +21,18 @@ def send_to_telegram(message):
 
 def fetch_tokens():
     url = "https://pump.fun/"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+    }
     try:
-        response = requests.get(url)
+        response = requests.get(url, headers=headers)
+        print("Status code:", response.status_code)
+        print("Response length:", len(response.text))
+
         soup = BeautifulSoup(response.text, "html.parser")
         links = soup.find_all("a", href=True)
+        print(f"Total link ditemukan: {len(links)}")
+
         for link in links:
             href = link["href"]
             if href.startswith("/token/"):
@@ -33,6 +41,7 @@ def fetch_tokens():
                     sent_tokens.add(full_url)
                     send_to_telegram(f"Token baru ditemukan!\n{full_url}")
                     print("Dikirim:", full_url)
+
     except Exception as e:
         print(f"Fetch error: {e}")
 
